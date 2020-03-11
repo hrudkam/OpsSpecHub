@@ -1,0 +1,117 @@
+<!-- Back Button -->
+<div class="row">
+    <div class="col-md-6">
+        <a routerLink="/osrfa" class="btn btn-link">
+        <i class="fa fa-arrow-circle-o-left"></i>
+        Back to RFAs
+        </a>
+    </div>
+</div>
+<!-- Display Card of RFA / SI Info -->
+<div *ngFor="let rfa of rfas" class="card bg-dark text-white">
+    <h5 class="card-header">
+      <a href="http://short/rfa/{{rfa.sinum}}"><img width="25" height="25" src="assets/Icons/Canvas.png" alt=""></a>
+      SI# {{rfa.sinum}} 
+      
+      <a href="http://short/rfa/{{rfa.rfanum}}"><img width="25" height="25" src="assets/Icons/Canvas.png" alt=""></a>
+       RFA# {{rfa.rfanum}}
+
+       - {{rfa.summary}}
+    </h5>    
+    <div class="card-body">
+            <div class="row">
+                <div class="cold-md-8 col-sm-6">
+                    <h6 style="display: inline">Customer: </h6>{{rfa.customer}}
+                    <p></p>
+                </div>
+                <div class="cold-md-8 col-sm-6">
+                    <h6 style="display: inline">Maintenance: </h6>{{rfa.maint | currency}}<p></p>
+                </div>
+                <div class="cold-md-8 col-sm-6">
+                    <h6 style="display: inline">Functionality: </h6>{{rfa.functionality}}<p></p>
+                </div>
+                <div class="cold-md-8 col-sm-6"><h6 style="display: inline">Summary: </h6> {{rfa.summary}}<p></p>
+                </div>
+                <div class="cold-md-8 col-sm-6"><h6 style="display: inline">RFA Owner: </h6> {{rfa.responsible}}<p></p>
+                </div>
+                <div class="cold-md-8 col-sm-6"><h6 style="display: inline">Approving Ops Spec: </h6> {{rfa.approved}}<p></p>
+                </div>
+            </div>
+    </div>
+</div>
+<P></P>
+<!-- Escalate RFA Form -->
+<div class="card bg-dark text-white" *ngIf="rfas[0].urgency === 0 else escalated">
+        <div class="card-header">
+         <h5>Escalation Request Form</h5> 
+        </div>
+        <div class="card-body">
+          <form #escManager="ngForm" (ngSubmit)="onSubmit(escManager)">
+            <!-- Manager/CSA Name  -->
+            <form class="example-form">
+              <mat-form-field class="example-full-width">
+                <input type="text"
+                       placeholder="Escalating Manager"
+                       matInput
+                       [matAutocomplete]="auto"
+                       name="name"
+                       #escManager="ngModel"
+                       [ngClass]="{'is-invalid':escManager.errors && escManager.touched}"
+                       [(ngModel)]="name"
+                       required                   
+                       >        
+                <mat-autocomplete #auto="matAutocomplete">
+                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </form>
+           <!-- Escalation Reason  -->
+           <div class="form-group">
+            <label for="escfactors">Escalation Factors</label>
+            <p></p>
+            <mat-checkbox value="after">Patient Safety </mat-checkbox>
+            <mat-checkbox>Data Loss </mat-checkbox>
+            <mat-checkbox>Data Integrity </mat-checkbox>
+            <mat-checkbox>Go-Live At Risk </mat-checkbox>
+            <mat-checkbox>Relationship </mat-checkbox>
+            <mat-checkbox>No Workaround </mat-checkbox>
+            <mat-checkbox>Strategic customer </mat-checkbox>
+            </div>                  
+              <input type="submit" value="Submit" class="btn btn-primary btn-block">
+          </form>
+    </div>
+</div>
+<!-- RFA Escalated -->
+<ng-template #escalated>
+
+    <div class="card-header">
+        <h4>Complete Escalation</h4> 
+       </div>
+       <div class="card-body">
+         <form #escFrom="ngForm" (ngSubmit)="onSubmitComplete(escFrom)">
+           <!-- Manager/CSA Name  -->
+           <div class="form-group">
+             <label for="name">Manager/CSA Name</label>
+             <input 
+                 type="text"
+                 class="form-control"
+                 name="name"
+                 #escName="ngModel"
+                 [ngClass]="{'is-invalid':escName.errors && escName.touched}"
+                 [(ngModel)]="name"
+                 minlength="2"
+                 required
+             >      
+             <div [hidden]="!escName.errors?.required" class="invalid-feedback">
+               Name is Required
+             </div>  
+             <div [hidden]="!escName.errors?.minlength" class="invalid-feedback">
+               Must be at least 2 characters
+             </div>
+           </div>                    
+             <input type="submit" value="Submit" class="btn btn-primary btn-block">
+         </form>
+   </div>
+</ng-template>

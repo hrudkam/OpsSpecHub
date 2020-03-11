@@ -1,0 +1,16 @@
+.highlight{
+    background-color: rgb(255, 17, 0); /* green */
+  }
+.mat-cell {
+    text-align: left;
+    width: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.mat-header-cell{
+    font-weight: bold;
+    font-size: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+

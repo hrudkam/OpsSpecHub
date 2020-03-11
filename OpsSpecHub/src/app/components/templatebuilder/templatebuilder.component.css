@@ -1,0 +1,17 @@
+/* input.ng-dirty.ng-invalid{
+width: 600px;
+} */
+mat-form-field {
+    width: 100%;
+}
+.URL{
+    font-size: large;
+    color: aqua;
+    font-weight: bold;
+}
+pre {
+    padding-left: 20px;
+    font-size: 18px;
+    font-family: Calibri;
+    color: white;
+}

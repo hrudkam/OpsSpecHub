@@ -1,0 +1,577 @@
+<form [formGroup]="dynamicForm">
+    <div class="card-group">
+        <div class="card bg-dark text-white">
+            <h5 class="card-header ">Request for Assistance Template 
+               <button (click)="onReset()" style="float: right;"><i class="fa fa-refresh" aria-hidden="true"></i></button> 
+            </h5>
+       
+            <div class="card-body">
+              <!--Begin of Form  --> 
+                    <!--What System Type?  -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>What System Type?</label>
+                            <select formControlName="systemType" class="form-control" [ngClass]="{ 'is-invalid': f.systemType.value ==='' && !f.systemType.value}">
+                                <option value=""></option>
+                                <option *ngFor="let item of systemType" value="{{item}}">{{item}}</option>
+                            </select>
+                            <div *ngIf="f.systemType.value ==='' || !f.systemType.value" class="invalid-feedback">
+                                <div *ngIf="f.systemType.value ===''">Please select a System Type
+                                </div>
+                            </div>
+                        </div>               
+                    </div>
+                    <!--Has an A4, MA, ME reviewd this?  -->
+                    <div *ngIf="f.systemType.value" class="form-row">
+                        <div class="form-group">
+                            <label>Have you spoken with an A4, Module Apprentice or Module Expert?</label>
+                            <select formControlName="reviewedByOther" class="form-control" [ngClass]="{ 'is-invalid': f.reviewedByOther.value === 'No'}">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                            <div *ngIf="f.reviewedByOther.value === 'No'" class="invalid-feedback">
+                                <div *ngIf="f.reviewedByOther.value === 'No'">Please discuss issue with your A4 or an Module Apprentice / Module Expert<p>
+                                </p>
+                                <a class="URL" href="http://pages.onbase.net/TechnicalSupport/Product-Suites/OnBase/ModuleApprenticeExpert" target="_blank">Module Apprentice / Module Expert List</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Who have you spoken with? -->
+                    <div *ngIf="f.reviewedByOther.value === 'Yes'" class="form-row">
+                        <div class="form-group">
+                            <label>Who have you spoken with?</label>
+                            <select formControlName="reviewByName" class="form-control" [ngClass]="{ 'is-invalid': f.reviewByName.value ===''}">
+                                <option value=""></option>
+                                <option *ngFor="let item of employees" >{{item.employeename}}</option>
+                            </select>
+                            <div *ngIf="f.reviewByName.value ===''" class="invalid-feedback">
+                                <div *ngIf="f.reviewByName.value ===''">Please select an A4 or an Module Apprentice / Module Expert you have discussed this with
+                                </div>
+                            </div>
+                        </div>               
+                    </div>
+                    <!-- What Type of assistance do you need? -->
+                    <div *ngIf="f.reviewByName.value !== '' && f.reviewedByOther.value === 'Yes'" class="form-row">
+                        <div class="form-group">
+                            <label>What type assistance are your requesting?</label>
+                            <select formControlName="typeOfAssistance" class="form-control" [ngClass]="{ 'is-invalid': f.typeOfAssistance.value === ''}">
+                                <option></option>
+                                <option  value="ts">Troubleshooting</option>
+                                <option value="q">General Question</option>
+                                <option value="defect">Defect Submission[Coming Soon]</option>
+                                <option value="backport">Backport Request[Coming Soon]</option>
+                                <option value="doc">Documentation Only[Coming Soon]</option>
+                            </select>
+                            <div *ngIf="f.typeOfAssistance.value ===''" class="invalid-feedback">
+                                <div *ngIf="f.typeOfAssistance.value ===''">Please select valid assistance type
+                                </div>
+                            </div>
+                        </div>               
+                    </div>
+                    <!-- Question Request Type -->
+                    <div *ngIf="f.typeOfAssistance.value==='q' && f.reviewedByOther.value === 'Yes' && reviewByName!=='' && f.typeOfAssistance.value !==''" class="form-row">
+                        <div class="form-group">
+                            <label>Is this about backporting an existing SCR / JIRA Defect?</label>
+                            <select formControlName="backportRequest" class="form-control" [ngClass]="{ 'is-invalid': f.backportRequest.value === '' || f.backportRequest.value==='y'}">
+                                <option></option>
+                                <option value="y">Yes</option>
+                                <option value="n">No</option>
+                            </select>
+                            <div *ngIf="f.backportRequest.value==='';" class="invalid-feedback">
+                                <div *ngIf="f.backportRequest.value===''">Please select valid answer
+                                </div>
+                            </div>
+                            <div *ngIf="f.backportRequest.value==='y';" class="invalid-feedback">
+                                <div *ngIf="f.backportRequest.value==='y'">Please follow the SCR Escalation / Backport process:
+                                    <p></p>
+                                    [TS Top 5 Process Definition].
+                                </div>
+                            </div>                    
+                        </div>   
+                        
+                    </div>
+                        <!-- Review Necessary resources? -->
+                        <div *ngIf="f.backportRequest.value==='n' && f.reviewedByOther.value === 'Yes' && reviewByName!=='' && f.typeOfAssistance !=='' && f.typeOfAssistance.value!=='ts' "  class="form-row" style="width: 50%">
+                        <form [formGroup]="dynamicForm" style="width: 1000px">
+                            <label>Which resources have you reviewed?</label>
+                            <p></p>
+                            <!-- Support Issues -->
+                            <mat-checkbox formControlName="resourcesReviewedSI" [ngClass]="{ 'is-invalid': f.resourcesReviewedSI.value === true}">Support Issues</mat-checkbox>
+                            <div *ngIf="f.resourcesReviewedSI.value===true">
+                                <div *ngIf="f.resourcesReviewedSI.value===true">
+                                    <mat-form-field>
+                                        <mat-label>List relevent Support Issues referenced</mat-label>
+                                        <input 
+                                        matInput
+                                        type="text"
+                                        formControlName="siInput" 
+                                        >        
+                                    </mat-form-field>
+                                </div>
+                            </div> 
+                            <p></p>
+                            <!-- SCRS's  -->
+                            <mat-checkbox formControlName="resourcesReviewedSCR" [ngClass]="{ 'is-invalid': f.resourcesReviewedSCR.value === true}">SCR</mat-checkbox>
+                            <div *ngIf="f.resourcesReviewedSCR.value===true">
+                                <div *ngIf="f.resourcesReviewedSCR.value===true">
+                                    <mat-form-field>
+                                        <mat-label>List relevent SCR's referenced</mat-label>
+                                        <input 
+                                        matInput 
+                                        type="text"
+                                        formControlName="scrInput"
+                                        >                                  
+                                    </mat-form-field>
+                                    
+                                </div>
+                            </div>
+                            <p></p>
+                            <!-- JIRA Cards -->
+                            <mat-checkbox formControlName="resourcesReviewedJIRA" [ngClass]="{ 'is-invalid': f.resourcesReviewedJIRA.value === true}">JIRA Cards</mat-checkbox>
+                            <div *ngIf="f.resourcesReviewedJIRA.value===true">
+                                <div *ngIf="f.resourcesReviewedJIRA.value===true">
+                                    <mat-form-field>
+                                        <mat-label>List relevent JIRA Cards referenced</mat-label>
+                                        <input 
+                                        matInput 
+                                        type="text"
+                                        formControlName="jiraInput"  
+                                        >                                  
+                                    </mat-form-field>                               
+                                </div>
+                            </div>
+                            <p></p>
+                            <!-- Commuinity/Confluence/Pages -->
+                            <mat-checkbox formControlName="resourcesReviewedCommunity" [ngClass]="{ 'is-invalid': f.resourcesReviewedCommunity.value === true}">Community Articles / KnowledgeBase / Confluence / Product Pages </mat-checkbox>
+                            <div *ngIf="f.resourcesReviewedCommunity.value===true">
+                                <div *ngIf="f.resourcesReviewedCommunity.value===true">
+                                    <mat-form-field>
+                                        <mat-label>List relevent Community Articles / KnowledgeBase / Confluence / Product Pages referenced</mat-label>
+                                        <input 
+                                        matInput 
+                                        type="text"
+                                        formControlName="communityInput">                                  
+                                    </mat-form-field>                               
+                                </div>
+                            </div>
+                            <div *ngIf="f.resourcesReviewedSI.value !== true && f.resourcesReviewedCommunity.value!==true && f.resourcesReviewedJIRA.value!== true  && f.resourcesReviewedSCR.value !== true">     
+                                <mat-form-field>            
+                                    <mat-label>Why have you not reviewed any of these resources?</mat-label>
+                                    <input 
+                                    matInput 
+                                    type="text" 
+                                    formControlName="noResourcesReviewed"   
+                                    >     
+                                </mat-form-field>                               
+                            </div> 
+                            <!-- What is your question? -->
+                            <div *ngIf="f.resourcesReviewedSI.value===true || f.resourcesReviewedSCR.value===true || f.resourcesReviewedJIRA.value==true || f.resourcesReviewedCommunity.value===true || f.noResourcesReviewed.value" class="form-row">
+                                {{f.noResourcesReviewed.value}}
+                                <mat-form-field>
+                                    <mat-label>What is your question?</mat-label>
+                                    <textarea 
+                                    matInput 
+                                    formControlName="rfaQuestionGQ"
+                                    placeholder="Ex: Does OnBase Web Client use Chromium?"></textarea>
+                                </mat-form-field>
+                                <!-- Any othe relevent information to provide? -->
+                                <mat-form-field >
+                                    <mat-label>Any other relevent information?</mat-label>
+                                    <textarea 
+                                    matInput
+                                    formControlName="rfaOther"
+                                    placeholder="Web Client 17.0.2. supports Web Client, V18 does not through local testing."></textarea>
+                                </mat-form-field>
+                            </div>                      
+                        </form>                        
+                        </div>
+                    <!-- Troubleshooting Request Type-->
+                        <!-- Able to replicate locally? -->
+                        <div *ngIf="f.reviewByName.value !== '' && f.reviewedByOther.value === 'Yes' && f.typeOfAssistance.value==='ts'" class="form-row">
+                            <label>Can you replicate this locally</label>
+                            <select formControlName="replicatedLocally" class="form-control">
+                                <option value="n">No</option>
+                                <option value="y">Yes</option>
+                            </select>
+                            <div *ngIf="f.replicatedLocally.value === 'y'">
+                                <p></p>
+                                <label>Have you found any SCR's relating to this?</label>
+                                <select formControlName="scrFound" class="form-control"(change)="onChangeSCRFound($event.target.value)">
+                                    <option value="n">No</option>
+                                    <option value="y">Yes</option>
+                                </select>
+                                <div *ngIf="f.scrFound.value ==='y'">
+                                        <mat-label>Please change "What type of assistance are you requesting to 'General Question'</mat-label> 
+                                </div> 
+                            </div>
+                        </div>
+                        <!-- What type of troubleshooting help is needed? -->
+                        <div *ngIf="(f.scrFound.value==='n' && f.typeOfAssistance.value==='ts' && f.replicatedLocally.value==='y' && f.reviewByName.value !=='') || (f.replicatedLocally.value==='n' && f.typeOfAssistance.value==='ts' && f.reviewByName.value !=='')" class="form-row">                           
+                            <label>What type of troubleshooting help?</label>
+                            <select formControlName="typeOfTS" class="form-control">
+                                <option value="Error">Error</option>
+                                <option value="Crash">Crash</option>
+                                <option value="Performance">Performance</option>
+                                <option value="Network">Network Related</option>
+                                <option value="DB">Database Performance</option>
+                            </select>
+                        </div>
+                        <!-- What Module Functionality? -->
+                        <div *ngIf="(f.scrFound.value==='n' && f.typeOfAssistance.value==='ts' && f.replicatedLocally.value==='y' && f.typeOfTS.value!=='' && f.replicatedLocally.value) || (f.replicatedLocally.value==='n' && f.typeOfAssistance.value==='ts' && f.typeOfTS.value!=='' && f.replicatedLocally.value)" class="form-row">
+                            <label>What Module is this related to? </label>
+                            <select formControlName="typeOfModule" class="form-control">
+                                <option value=""></option>
+                                <option *ngFor="let module of modules"  value="{{module.functionality}}">{{module.functionality}}</option>
+                            </select>
+                            <div *ngFor="let item of modules">
+                                <tr *ngIf="item.functionality === f.typeOfModule.value && item.resource"><a href="{{item.resource}}" target="_blank" class="URL">{{item.functionality}} - Additional RFA Guidelines</a></tr>
+                                <!-- <tr *ngIf="item.functionality"></tr> -->
+                            </div>
+                        </div>
+                        
+                        <!-- What are you asking for? -->
+                        <div class="ts-questions" *ngIf="(f.scrFound.value==='n' && f.typeOfAssistance.value==='ts' && f.replicatedLocally.value==='y' && f.typeOfTS.value!=='' && f.typeOfModule.value) || (f.replicatedLocally.value==='n' && f.typeOfAssistance.value==='ts' && f.typeOfTS.value!=='' && f.typeOfModule.value)">
+                                <mat-form-field>
+                                    <label>What exactly is it that you are requesting?</label>
+                                    <input 
+                                    matInput
+                                    type="text"
+                                    formControlName="whatAreYouAsking" 
+                                    >        
+                                </mat-form-field>
+                                <mat-form-field >
+                                    <label>Are there any errors logged?[Diagnostics, Client Side, Event Viewer, Developer Tab(Web Clients)]</label>
+                                    <textarea 
+                                    matInput
+                                    type="textarea"
+                                    formControlName="whatErrors" 
+                                    > </textarea>      
+                                </mat-form-field>
+                                <mat-form-field >
+                                    <label>What Version of OnBase?</label>
+                                    <input 
+                                    matInput
+                                    type="text"
+                                    formControlName="whatVersion" 
+                                    >        
+                                </mat-form-field>
+                                <label>Production or Test</label>
+                                <select formControlName="whatEnv" class="form-control">
+                                    <option value="Production">Production</option>
+                                    <option value="Test">Test</option>
+                                </select>
+                                <mat-form-field >
+                                    <label>When did this start?</label>
+                                    <input 
+                                    matInput 
+                                    [matDatepicker]="picker"
+                                    formControlName="startIssue" 
+                                    >
+                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>    
+                                </mat-form-field>
+                                <mat-form-field >
+                                    <label>How often does this occur?</label>
+                                    <input 
+                                    matInput
+                                    type="text"
+                                    formControlName="whatFrequency" 
+                                    >   
+                                </mat-form-field>
+                                <mat-form-field >
+                                    <label>How many users are affected?</label>
+                                    <input 
+                                    matInput
+                                    type="text"
+                                    formControlName="affectedUsers" 
+                                    >   
+                                </mat-form-field>
+                                <mat-form-field >
+                                    <label>What steps have you tried? (Bulleted list, straight and to the point) </label>
+                                    <textarea 
+                                    matInput
+                                    type="textarea"
+                                    formControlName="whatSteps" 
+                                    > </textarea>      
+                                </mat-form-field>
+                                <!-- Begin Logging Section -->
+                        <form [formGroup]="dynamicForm">
+                            <label>What logging have you captured?</label>
+                            <p></p>
+                            <!-- Diagnostics Console -->
+                            <div *ngIf="f.systemType.value==='OnBase'">
+                                <mat-checkbox formControlName="diagnosticsLogs" [ngClass]="{ 'is-invalid': f.diagnosticsLogs.value === true}">Diagnostics Console {{f.systemType.value}}</mat-checkbox>
+                                <div *ngIf="f.diagnosticsLogs.value===true">
+                                    <div *ngIf="f.diagnosticsLogs.value===true ">
+                                        <mat-form-field>
+                                            <mat-label>Provide CDP location to logs</mat-label>
+                                            <input 
+                                            matInput
+                                            type="text"
+                                            formControlName="diagnosticsLogLoc" 
+                                            >        
+                                        </mat-form-field>
+                                        <mat-form-field>
+                                            <mat-label>What specific time frame should be reviewed?</mat-label>
+                                            <input 
+                                            matInput
+                                            type="text"
+                                            formControlName="logTimeID" 
+                                            >        
+                                        </mat-form-field>
+                                        <mat-form-field>
+                                            <mat-label>Is there a Username to review?</mat-label>
+                                            <input 
+                                            matInput
+                                            type="text"
+                                            formControlName="logUserID" 
+                                            >        
+                                        </mat-form-field>
+                                    </div>
+                                </div> 
+                            </div>
+                            
+                            <p></p>
+                            <!-- Other logging -->  
+                            <mat-checkbox formControlName="rfaOtherTS" [ngClass]="{ 'is-invalid': f.rfaOtherTS.value === true}">Other Logging</mat-checkbox>
+                            <div *ngIf="f.rfaOtherTS.value===true">
+                                <div *ngIf="f.rfaOtherTS.value===true">
+                                    <mat-form-field>
+                                        <mat-label>Provide CDP location to logs</mat-label>
+                                        <input 
+                                        matInput
+                                        type="text"
+                                        formControlName="otherLogLoc" 
+                                        >        
+                                    </mat-form-field>
+                                    <mat-form-field>
+                                        <mat-label>What specific time frame should be reviewed?</mat-label>
+                                        <input 
+                                        matInput
+                                        type="text"
+                                        formControlName="otherLogTimeID" 
+                                        >        
+                                    </mat-form-field>
+                                </div>
+                            </div>    
+                            <p></p>                   
+                            <!-- Event Viewer -->
+                            <mat-checkbox formControlName="eventviewer" [ngClass]="{ 'is-invalid': f.eventviewer.value === true}">Event Viewer Logs</mat-checkbox>
+                            <div *ngIf="f.eventviewer.value===true">
+                                <div *ngIf="f.eventviewer.value===true">
+                                    <mat-form-field>
+                                        <mat-label>Provide CDP location to logs</mat-label>
+                                        <input 
+                                        matInput
+                                        type="text"
+                                        formControlName="evLogLoc" 
+                                        >        
+                                    </mat-form-field>
+                                    <mat-form-field>
+                                        <mat-label>What specific time frame should be reviewed?</mat-label>
+                                        <input 
+                                        matInput
+                                        type="text"
+                                        formControlName="evLogTimeID" 
+                                        >        
+                                    </mat-form-field>
+                                </div>
+                            </div> 
+                            <p></p>
+
+                            <!-- Why are there no logs?  -->
+                            <div *ngIf="f.rfaOtherTS.value !== true && f.eventviewer.value!==true && f.diagnosticsLogs.value!== true  && f.systemType.value ==='OnBase'">     
+                                <mat-form-field>            
+                                    <mat-label>Why are no logs provided? Should this be a General Question RFA?</mat-label>
+                                    <input 
+                                    matInput 
+                                    type="text" 
+                                    formControlName="noResourcesReviewedTS"   
+                                    >     
+                                </mat-form-field>                               
+                            </div> 
+						</form>
+                        <!-- End Logging section -->
+                        </div>
+                        
+
+
+                <!--End of Form -->      
+            </div>
+        </div>
+        <!-- RFA Output form -->
+        <div class="card bg-dark text-white">
+            <h5 class="card-header">RFA Output</h5>
+            <div class="card-body">
+                <div class="systemType">
+                    <h6>System Type</h6>
+                    {{f.systemType.value}}
+                    <p></p>
+                </div>
+                <div class="reviewedByOther" *ngIf="f.systemType.value">
+                    <h6>Has this been reviewed by an A4, MA, or ME?</h6>
+                    {{f.reviewedByOther.value}} - {{f.reviewByName.value}}
+                    <p></p>
+                </div>
+                <!-- General Question Form Output -->
+                <div class="resourcesReviewed" *ngIf="(f.resourcesReviewedSI.value===true || f.resourcesReviewedSCR.value===true || f.resourcesReviewedJIRA.value==true || f.resourcesReviewedCommunity.value===true) && f.typeOfAssistance.value==='q' ">
+                    <h6>What resources have you reviewed?</h6>
+                    Support Issues: {{f.siInput.value}}
+                    <p></p>
+                    SCR's: {{f.scrInput.value}}
+                    <p></p>
+                    JIRA Card's: {{f.jiraInput.value}}
+                    <p></p>
+                    Other: {{f.communityInput.value}}
+                    <p></p>
+                </div>                
+                <div class="notReviewed" *ngIf="f.noResourcesReviewed.value">
+                    <h6>Why was this not reviewed by an A4/MA/ME?</h6>
+                    <p></p>
+                    {{f.noResourcesReviewed.value}}
+                    <p></p>
+                </div>
+                <div class="question" *ngIf="f.rfaQuestionGQ.value">
+                    <h6>What is your question?</h6>
+                    <p></p>
+                    {{f.rfaQuestionGQ.value}}
+                    <p></p>
+                </div>
+                <div class="other" *ngIf="f.rfaOther.value">
+                    <h6>What is your question?</h6>
+                    <p></p>
+                    {{f.rfaOther.value}}
+                </div>   
+                 <!--End of General Question Form -->
+                 <!-- Begin Troubleshooting Form -->
+                 <div class="replicatedLocally" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts'">
+                    <h6>Can you replicate this locally?</h6>
+                    <p></p>
+                    {{swapValue(f.replicatedLocally.value)}}
+                    <p></p>
+                </div> 
+                <div class="typeOfTS" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts' && f.typeOfTS.value">
+                    <h6>What type of TS Help?</h6>
+                    <p></p>
+                    {{f.typeOfTS.value}}
+                    <p></p>
+                </div> 
+                <div class="typeOfModule" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts' && f.typeOfTS.value">
+                    <h6>What Module?</h6>
+                    <p></p>
+                    {{f.typeOfModule.value}}
+                    <p></p>
+                </div> 
+                <div class="whatIsRequest"
+                *ngIf="f.whatAreYouAsking.value && f.typeOfModule.value">
+                    <h6>What exactly is it that you are requesting?</h6>
+                    <p></p>
+                    {{f.whatAreYouAsking.value}}
+                    <p></p>
+                </div>
+                <div class="whatVersion"
+                *ngIf="f.whatVersion.value && f.typeOfModule.value">
+                    <h6>What Version of OnBase?</h6>
+                    <p></p>
+                    {{f.whatVersion.value}}
+                    <p></p>
+                </div>
+                <div class="whatEnv"
+                *ngIf="f.whatEnv.value && f.typeOfModule.value">
+                    <h6>Production or Test</h6>
+                    <p></p>
+                    {{f.whatEnv.value}}
+                    <p></p>
+                </div>
+                <div class="whatErrors"
+                *ngIf="f.typeOfTS.value ==='Error' && f.typeOfModule.value && f.whatErrors.value">
+                    <h6>Are there any errors logged?[Diagnostics, Client Side, Event Viewer, Developer Tab(Web Clients)]</h6>
+                    <p></p>
+                    {{f.whatErrors.value}}
+                    <p></p>
+                </div>
+                <div class="startIssue"
+                *ngIf="f.typeOfModule.value && f.startIssue.value">
+                    <h6>When did this start?</h6>
+                    <p></p>
+                    {{f.startIssue.value}}
+                    <p></p>
+                </div>
+                <div class="whatFrequency"                *ngIf="f.typeOfModule.value && f.whatFrequency.value">
+                    <h6>How often does this occur?</h6>
+                    <p></p>
+                    {{f.whatFrequency.value}}
+                    <p></p>
+                </div>
+                <div class="affectedUsers" *ngIf="f.typeOfModule.value && f.affectedUsers.value">
+                    <h6>How many users does this affect?</h6>
+                    <p></p>
+                    {{f.affectedUsers.value}}
+                    <p></p>
+                </div>  
+                <div class="whatSteps" *ngIf="f.typeOfModule.value && f.whatSteps.value">
+                    <h6>What steps have you tried? (Bulleted list, straight and to the point)</h6>
+                    <p></p>
+                    <div><pre>{{f.whatSteps.value}}</pre></div>
+                    <p></p>
+                </div>         
+                <!-- Logging Output Section -->
+                <div class="diagnosticsLogs" *ngIf="(f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value) || (f.eventviewer.value===true && f.eventviewer.value)">
+                    <h6>What specific logging have you captured?</h6>
+                        <div class="diagnosticsLogs" *ngIf="f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value && f.systemType==='OnBase'">
+                        Diagnostics Console Logs
+                        <p></p>
+                        <div class="diagnosticsLogs" *ngIf="f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value && f.systemType!=='OnBase'">
+                            Logging captured
+                            <p></p>
+                        </div>
+                        <span style="padding-left: 20px;">
+                            CDP Location - {{f.diagnosticsLogLoc.value}}
+                        </span>
+                        <p></p>
+                        <span style="padding-left: 20px;">
+                            Timeframe - {{f.logTimeID.value}}
+                        </span>
+                        <p></p>
+                        <span style="padding-left: 20px;">
+                            User - {{f.logUserID.value}}
+                        </span>
+                        </div>
+                </div>
+                <div class="eventviewer" *ngIf="f.eventviewer.value===true && f.eventviewer.value">                    
+                    Event Viewer Logs
+                    <p></p>
+                    <span style="padding-left: 20px;">
+                        CDP Location - {{f.evLogLoc.value}}
+                    </span>
+                    <p></p>
+                    <span style="padding-left: 20px;">
+                        Timeframe - {{f.evLogTimeID.value}}
+                    </span>
+                </div>
+                <div class="otherLogs" *ngIf="f.rfaOtherTS.value===true && f.rfaOtherTS.value">                    
+                    Other Logs
+                    <p></p>
+                    <span style="padding-left: 20px;">
+                        CDP Location - {{f.otherLogLoc.value}}
+                    </span>
+                    <p></p>
+                    <span style="padding-left: 20px;">
+                        Timeframe - {{f.otherLogTimeID.value}}
+                    </span>
+                </div>
+                <div class="notReviewed" *ngIf="f.noResourcesReviewedTS.value && ((!f.rfaOtherTS.value===true && !f.rfaOtherTS.value) && ((!f.eventviewer.value===true && !f.eventviewer.value))&&((!f.diagnosticsLogs.value===true && !f.diagnosticsLogLoc.value)))">
+                    <p></p>
+                    <span style="padding-left: 20px;">
+                        Why are there no logs? - {{f.noResourcesReviewedTS.value}}
+                    </span>
+                </div>
+                 <!-- End Troubleshooting Form -->
+             </div>   
+        </div>
+    </div>
+
+</form>
+
+        
