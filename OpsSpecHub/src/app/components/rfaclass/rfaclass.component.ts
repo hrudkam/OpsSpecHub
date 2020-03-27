@@ -36,6 +36,8 @@ export class RfaclassComponent implements OnInit {
 
   public getAllRFA(){    
     this.rfaClass.getAllRFA().subscribe(data=> {this.rfas = data; this.dataSource.data = this.rfas});
+    
+    console.log(this.rfas[0].rfanum)
   }
 
   applyFilter(filterValue: string) {

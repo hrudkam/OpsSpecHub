@@ -4,6 +4,9 @@ import { FlashMessagesService } from 'angular2-flash-messages';
 import { RfaclassService } from 'src/app/services/rfaclass.service';
 import { iModule,iRFAClass,iEmployee } from 'src/app/models/rfaclass';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import { Observable } from 'rxjs';
+import { ThrowStmt } from '@angular/compiler';
+
 
 @Component({
   selector: 'app-templatebuilder',
@@ -42,6 +45,7 @@ export class TemplatebuilderComponent implements OnInit {
     'Streamline ECM',
     'Universal Clinical Platform (Acuo)'
   ]
+  filteredModule: iModule[]; 
 
   constructor(
     private formBuilder: FormBuilder,
@@ -92,17 +96,33 @@ export class TemplatebuilderComponent implements OnInit {
           noResourcesReviewedTS:['',Validators.required]
 
       });
-      this.rfaClass.getModules().subscribe(data=>{this.modules = data;})
 
+      this.modules = []; 
+      this.getAllModules(); 
       this.rfaClass.getEmployees().subscribe(data=>{this.employees = data;})    
+      console.log("Init" + this.modules.length)
+      
+      this.f.systemType.setValue('OnBase');
+      this.f.reviewedByOther.setValue('Yes');
+      this.f.reviewByName.setValue('Alex Bell');
+      this.f.typeOfAssistance.setValue('ts');
+      this.f.replicatedLocally.setValue('y');
+      this.f.scrFound.setValue('n');
+      this.f.typeOfTS.setValue('error'); 
+
+
   }
 
+  getAllModules() {
+    this.rfaClass.getModules().subscribe(data => {data.forEach(element => {
+      this.modules.push({functionality: element.functionality,resource: element.resource,systemtype: element.systemtype})
+    });});
+    this.filteredModule = this.modules
+
+  }
   // convenience getters for easy access to form fields
   get f() { return this.dynamicForm.controls; }
 
-  async getModules(){
-
-  }
 
   onChangeSCRFound(e) {
     if(this.f.scrFound.value==='y'){
@@ -137,5 +157,36 @@ export class TemplatebuilderComponent implements OnInit {
       cssClass: 'alert-danger', timeout:1000
     });
   }
-}
 
+  filterModules(systemtype: string){ 
+    console.log(systemtype);
+    console.log("Begin Filter" + this.modules.length)
+    this.filteredModule = []
+    if(this.modules){
+      this.filteredModule = this.modules.filter((data) =>data.systemtype === systemtype)
+      console.log("after filter" + this.modules.length)
+    }
+    else
+    {
+      this.getAllModules(); 
+      this.modules = this.modules.filter((data) =>data.systemtype === systemtype)
+      console.log("nope")
+    }
+    
+  }
+
+  copyForm(){
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = this.f.whatSteps.value;
+    console.log(selBox.value)
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+  }
+}

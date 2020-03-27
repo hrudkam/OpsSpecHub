@@ -2,16 +2,16 @@
     <div class="card-group">
         <div class="card bg-dark text-white">
             <h5 class="card-header ">Request for Assistance Template 
-               <button (click)="onReset()" style="float: right;"><i class="fa fa-refresh" aria-hidden="true"></i></button> 
+               <button mat-button (click)="onReset()" style="float: right;"><i class="fa fa-refresh fa-lg" aria-hidden="true"></i></button> 
             </h5>
        
-            <div class="card-body">
+            <div class="card-body" style="overflow-y: auto; height:775px">
               <!--Begin of Form  --> 
                     <!--What System Type?  -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>What System Type?</label>
-                            <select formControlName="systemType" class="form-control" [ngClass]="{ 'is-invalid': f.systemType.value ==='' && !f.systemType.value}">
+                            <select formControlName="systemType" (change)="filterModules(f.systemType.value)" class="form-control" [ngClass]="{ 'is-invalid': f.systemType.value ==='' && !f.systemType.value}">
                                 <option value=""></option>
                                 <option *ngFor="let item of systemType" value="{{item}}">{{item}}</option>
                             </select>
@@ -43,7 +43,8 @@
                             <label>Who have you spoken with?</label>
                             <select formControlName="reviewByName" class="form-control" [ngClass]="{ 'is-invalid': f.reviewByName.value ===''}">
                                 <option value=""></option>
-                                <option *ngFor="let item of employees" >{{item.employeename}}</option>
+                                <option value="Other">Other</option>
+                                <option *ngFor="let item of employees" value="{{item.employeename}}">{{item.employeename}}</option>
                             </select>
                             <div *ngIf="f.reviewByName.value ===''" class="invalid-feedback">
                                 <div *ngIf="f.reviewByName.value ===''">Please select an A4 or an Module Apprentice / Module Expert you have discussed this with
@@ -219,10 +220,10 @@
                         </div>
                         <!-- What Module Functionality? -->
                         <div *ngIf="(f.scrFound.value==='n' && f.typeOfAssistance.value==='ts' && f.replicatedLocally.value==='y' && f.typeOfTS.value!=='' && f.replicatedLocally.value) || (f.replicatedLocally.value==='n' && f.typeOfAssistance.value==='ts' && f.typeOfTS.value!=='' && f.replicatedLocally.value)" class="form-row">
-                            <label>What Module is this related to? </label>
+                            <label>What Module is this related to? </label>                            
                             <select formControlName="typeOfModule" class="form-control">
                                 <option value=""></option>
-                                <option *ngFor="let module of modules"  value="{{module.functionality}}">{{module.functionality}}</option>
+                                <option *ngFor="let module of filteredModule"  value="{{module.functionality}}">{{ module.functionality}}</option>
                             </select>
                             <div *ngFor="let item of modules">
                                 <tr *ngIf="item.functionality === f.typeOfModule.value && item.resource"><a href="{{item.resource}}" target="_blank" class="URL">{{item.functionality}} - Additional RFA Guidelines</a></tr>
@@ -402,171 +403,176 @@
         </div>
         <!-- RFA Output form -->
         <div class="card bg-dark text-white">
-            <h5 class="card-header">RFA Output</h5>
-            <div class="card-body">
-                <div class="systemType">
-                    <h6>System Type</h6>
-                    {{f.systemType.value}}
-                    <p></p>
-                </div>
-                <div class="reviewedByOther" *ngIf="f.systemType.value">
-                    <h6>Has this been reviewed by an A4, MA, or ME?</h6>
-                    {{f.reviewedByOther.value}} - {{f.reviewByName.value}}
-                    <p></p>
-                </div>
-                <!-- General Question Form Output -->
-                <div class="resourcesReviewed" *ngIf="(f.resourcesReviewedSI.value===true || f.resourcesReviewedSCR.value===true || f.resourcesReviewedJIRA.value==true || f.resourcesReviewedCommunity.value===true) && f.typeOfAssistance.value==='q' ">
-                    <h6>What resources have you reviewed?</h6>
-                    Support Issues: {{f.siInput.value}}
-                    <p></p>
-                    SCR's: {{f.scrInput.value}}
-                    <p></p>
-                    JIRA Card's: {{f.jiraInput.value}}
-                    <p></p>
-                    Other: {{f.communityInput.value}}
-                    <p></p>
-                </div>                
-                <div class="notReviewed" *ngIf="f.noResourcesReviewed.value">
-                    <h6>Why was this not reviewed by an A4/MA/ME?</h6>
-                    <p></p>
-                    {{f.noResourcesReviewed.value}}
-                    <p></p>
-                </div>
-                <div class="question" *ngIf="f.rfaQuestionGQ.value">
-                    <h6>What is your question?</h6>
-                    <p></p>
-                    {{f.rfaQuestionGQ.value}}
-                    <p></p>
-                </div>
-                <div class="other" *ngIf="f.rfaOther.value">
-                    <h6>What is your question?</h6>
-                    <p></p>
-                    {{f.rfaOther.value}}
-                </div>   
-                 <!--End of General Question Form -->
-                 <!-- Begin Troubleshooting Form -->
-                 <div class="replicatedLocally" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts'">
-                    <h6>Can you replicate this locally?</h6>
-                    <p></p>
-                    {{swapValue(f.replicatedLocally.value)}}
-                    <p></p>
-                </div> 
-                <div class="typeOfTS" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts' && f.typeOfTS.value">
-                    <h6>What type of TS Help?</h6>
-                    <p></p>
-                    {{f.typeOfTS.value}}
-                    <p></p>
-                </div> 
-                <div class="typeOfModule" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts' && f.typeOfTS.value">
-                    <h6>What Module?</h6>
-                    <p></p>
-                    {{f.typeOfModule.value}}
-                    <p></p>
-                </div> 
-                <div class="whatIsRequest"
-                *ngIf="f.whatAreYouAsking.value && f.typeOfModule.value">
-                    <h6>What exactly is it that you are requesting?</h6>
-                    <p></p>
-                    {{f.whatAreYouAsking.value}}
-                    <p></p>
-                </div>
-                <div class="whatVersion"
-                *ngIf="f.whatVersion.value && f.typeOfModule.value">
-                    <h6>What Version of OnBase?</h6>
-                    <p></p>
-                    {{f.whatVersion.value}}
-                    <p></p>
-                </div>
-                <div class="whatEnv"
-                *ngIf="f.whatEnv.value && f.typeOfModule.value">
-                    <h6>Production or Test</h6>
-                    <p></p>
-                    {{f.whatEnv.value}}
-                    <p></p>
-                </div>
-                <div class="whatErrors"
-                *ngIf="f.typeOfTS.value ==='Error' && f.typeOfModule.value && f.whatErrors.value">
-                    <h6>Are there any errors logged?[Diagnostics, Client Side, Event Viewer, Developer Tab(Web Clients)]</h6>
-                    <p></p>
-                    {{f.whatErrors.value}}
-                    <p></p>
-                </div>
-                <div class="startIssue"
-                *ngIf="f.typeOfModule.value && f.startIssue.value">
-                    <h6>When did this start?</h6>
-                    <p></p>
-                    {{f.startIssue.value}}
-                    <p></p>
-                </div>
-                <div class="whatFrequency"                *ngIf="f.typeOfModule.value && f.whatFrequency.value">
-                    <h6>How often does this occur?</h6>
-                    <p></p>
-                    {{f.whatFrequency.value}}
-                    <p></p>
-                </div>
-                <div class="affectedUsers" *ngIf="f.typeOfModule.value && f.affectedUsers.value">
-                    <h6>How many users does this affect?</h6>
-                    <p></p>
-                    {{f.affectedUsers.value}}
-                    <p></p>
-                </div>  
-                <div class="whatSteps" *ngIf="f.typeOfModule.value && f.whatSteps.value">
-                    <h6>What steps have you tried? (Bulleted list, straight and to the point)</h6>
-                    <p></p>
-                    <div><pre>{{f.whatSteps.value}}</pre></div>
-                    <p></p>
-                </div>         
-                <!-- Logging Output Section -->
-                <div class="diagnosticsLogs" *ngIf="(f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value) || (f.eventviewer.value===true && f.eventviewer.value)">
-                    <h6>What specific logging have you captured?</h6>
-                        <div class="diagnosticsLogs" *ngIf="f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value && f.systemType==='OnBase'">
-                        Diagnostics Console Logs
+            <h5 class="card-header">RFA Output 
+                <button mat-button style="float: right;" (click)="copyForm()">
+                    <i class="fa fa-clone fa-lg" aria-hidden="true" ></i>
+                </button>
+            </h5>
+            
+            <div class="card-body">                
+                    <div class="systemType">
+                        <h6>System Type</h6>
+                        {{f.systemType.value}}
                         <p></p>
-                        <div class="diagnosticsLogs" *ngIf="f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value && f.systemType!=='OnBase'">
-                            Logging captured
+                    </div>
+                    <div class="reviewedByOther" *ngIf="f.systemType.value">
+                        <h6>Has this been reviewed by an A4, MA, or ME?</h6>
+                        {{f.reviewedByOther.value}} - {{f.reviewByName.value}}
+                        <p></p>
+                    </div>
+                    <!-- General Question Form Output -->
+                    <div class="resourcesReviewed" *ngIf="(f.resourcesReviewedSI.value===true || f.resourcesReviewedSCR.value===true || f.resourcesReviewedJIRA.value==true || f.resourcesReviewedCommunity.value===true) && f.typeOfAssistance.value==='q' ">
+                        <h6>What resources have you reviewed?</h6>
+                        Support Issues: {{f.siInput.value}}
+                        <p></p>
+                        SCR's: {{f.scrInput.value}}
+                        <p></p>
+                        JIRA Card's: {{f.jiraInput.value}}
+                        <p></p>
+                        Other: {{f.communityInput.value}}
+                        <p></p>
+                    </div>                
+                    <div class="notReviewed" *ngIf="f.noResourcesReviewed.value">
+                        <h6>Why was this not reviewed by an A4/MA/ME?</h6>
+                        <p></p>
+                        {{f.noResourcesReviewed.value}}
+                        <p></p>
+                    </div>
+                    <div class="question" *ngIf="f.rfaQuestionGQ.value">
+                        <h6>What is your question?</h6>
+                        <p></p>
+                        {{f.rfaQuestionGQ.value}}
+                        <p></p>
+                    </div>
+                    <div class="other" *ngIf="f.rfaOther.value">
+                        <h6>What is your question?</h6>
+                        <p></p>
+                        {{f.rfaOther.value}}
+                    </div>   
+                     <!--End of General Question Form -->
+                     <!-- Begin Troubleshooting Form -->
+                     <div class="replicatedLocally" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts'">
+                        <h6>Can you replicate this locally?</h6>
+                        <p></p>
+                        {{swapValue(f.replicatedLocally.value)}}
+                        <p></p>
+                    </div> 
+                    <div class="typeOfTS" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts' && f.typeOfTS.value">
+                        <h6>What type of TS Help?</h6>
+                        <p></p>
+                        {{f.typeOfTS.value}}
+                        <p></p>
+                    </div> 
+                    <div class="typeOfModule" *ngIf="f.replicatedLocally.value && f.typeOfAssistance.value ==='ts' && f.typeOfTS.value">
+                        <h6>What Module?</h6>
+                        <p></p>
+                        {{f.typeOfModule.value}}
+                        <p></p>
+                    </div> 
+                    <div class="whatIsRequest"
+                    *ngIf="f.whatAreYouAsking.value && f.typeOfModule.value">
+                        <h6>What exactly is it that you are requesting?</h6>
+                        <p></p>
+                        {{f.whatAreYouAsking.value}}
+                        <p></p>
+                    </div>
+                    <div class="whatVersion"
+                    *ngIf="f.whatVersion.value && f.typeOfModule.value">
+                        <h6>What Version of OnBase?</h6>
+                        <p></p>
+                        {{f.whatVersion.value}}
+                        <p></p>
+                    </div>
+                    <div class="whatEnv"
+                    *ngIf="f.whatEnv.value && f.typeOfModule.value">
+                        <h6>Production or Test</h6>
+                        <p></p>
+                        {{f.whatEnv.value}}
+                        <p></p>
+                    </div>
+                    <div class="whatErrors"
+                    *ngIf="f.typeOfTS.value ==='Error' && f.typeOfModule.value && f.whatErrors.value">
+                        <h6>Are there any errors logged?[Diagnostics, Client Side, Event Viewer, Developer Tab(Web Clients)]</h6>
+                        <p></p>
+                        {{f.whatErrors.value}}
+                        <p></p>
+                    </div>
+                    <div class="startIssue"
+                    *ngIf="f.typeOfModule.value && f.startIssue.value">
+                        <h6>When did this start?</h6>
+                        <p></p>
+                        {{f.startIssue.value | date}}
+                        <p></p>
+                    </div>
+                    <div class="whatFrequency"                *ngIf="f.typeOfModule.value && f.whatFrequency.value">
+                        <h6>How often does this occur?</h6>
+                        <p></p>
+                        {{f.whatFrequency.value}}
+                        <p></p>
+                    </div>
+                    <div class="affectedUsers" *ngIf="f.typeOfModule.value && f.affectedUsers.value">
+                        <h6>How many users does this affect?</h6>
+                        <p></p>
+                        {{f.affectedUsers.value}}
+                        <p></p>
+                    </div>  
+                    <div class="whatSteps" *ngIf="f.typeOfModule.value && f.whatSteps.value">
+                        <h6>What steps have you tried? (Bulleted list, straight and to the point)</h6>
+                        <p></p>
+                        <div><pre>{{f.whatSteps.value}}</pre></div>
+                        <p></p>
+                    </div>         
+                    <!-- Logging Output Section -->
+                    <div class="diagnosticsLogs" *ngIf="(f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value) || (f.eventviewer.value===true && f.eventviewer.value)">
+                        <h6>What specific logging have you captured?</h6>
+                            <div class="diagnosticsLogs" *ngIf="f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value && f.systemType==='OnBase'">
+                            Diagnostics Console Logs
                             <p></p>
-                        </div>
+                            <div class="diagnosticsLogs" *ngIf="f.diagnosticsLogs.value===true && f.diagnosticsLogLoc.value && f.systemType!=='OnBase'">
+                                Logging captured
+                                <p></p>
+                            </div>
+                            <span style="padding-left: 20px;">
+                                CDP Location - {{f.diagnosticsLogLoc.value}}
+                            </span>
+                            <p></p>
+                            <span style="padding-left: 20px;">
+                                Timeframe - {{f.logTimeID.value}}
+                            </span>
+                            <p></p>
+                            <span style="padding-left: 20px;">
+                                User - {{f.logUserID.value}}
+                            </span>
+                            </div>
+                    </div>
+                    <div class="eventviewer" *ngIf="f.eventviewer.value===true && f.eventviewer.value">                    
+                        Event Viewer Logs
+                        <p></p>
                         <span style="padding-left: 20px;">
-                            CDP Location - {{f.diagnosticsLogLoc.value}}
+                            CDP Location - {{f.evLogLoc.value}}
                         </span>
                         <p></p>
                         <span style="padding-left: 20px;">
-                            Timeframe - {{f.logTimeID.value}}
+                            Timeframe - {{f.evLogTimeID.value}}
+                        </span>
+                    </div>
+                    <div class="otherLogs" *ngIf="f.rfaOtherTS.value===true && f.rfaOtherTS.value">                    
+                        Other Logs
+                        <p></p>
+                        <span style="padding-left: 20px;">
+                            CDP Location - {{f.otherLogLoc.value}}
                         </span>
                         <p></p>
                         <span style="padding-left: 20px;">
-                            User - {{f.logUserID.value}}
+                            Timeframe - {{f.otherLogTimeID.value}}
                         </span>
-                        </div>
-                </div>
-                <div class="eventviewer" *ngIf="f.eventviewer.value===true && f.eventviewer.value">                    
-                    Event Viewer Logs
-                    <p></p>
-                    <span style="padding-left: 20px;">
-                        CDP Location - {{f.evLogLoc.value}}
-                    </span>
-                    <p></p>
-                    <span style="padding-left: 20px;">
-                        Timeframe - {{f.evLogTimeID.value}}
-                    </span>
-                </div>
-                <div class="otherLogs" *ngIf="f.rfaOtherTS.value===true && f.rfaOtherTS.value">                    
-                    Other Logs
-                    <p></p>
-                    <span style="padding-left: 20px;">
-                        CDP Location - {{f.otherLogLoc.value}}
-                    </span>
-                    <p></p>
-                    <span style="padding-left: 20px;">
-                        Timeframe - {{f.otherLogTimeID.value}}
-                    </span>
-                </div>
-                <div class="notReviewed" *ngIf="f.noResourcesReviewedTS.value && ((!f.rfaOtherTS.value===true && !f.rfaOtherTS.value) && ((!f.eventviewer.value===true && !f.eventviewer.value))&&((!f.diagnosticsLogs.value===true && !f.diagnosticsLogLoc.value)))">
-                    <p></p>
-                    <span style="padding-left: 20px;">
-                        Why are there no logs? - {{f.noResourcesReviewedTS.value}}
-                    </span>
-                </div>
+                    </div>
+                    <div class="notReviewed" *ngIf="f.noResourcesReviewedTS.value && ((!f.rfaOtherTS.value===true && !f.rfaOtherTS.value) && ((!f.eventviewer.value===true && !f.eventviewer.value))&&((!f.diagnosticsLogs.value===true && !f.diagnosticsLogLoc.value)))">
+                        <p></p>
+                        <span style="padding-left: 20px;">
+                            Why are there no logs? - {{f.noResourcesReviewedTS.value}}
+                        </span>
+                    </div>
                  <!-- End Troubleshooting Form -->
              </div>   
         </div>

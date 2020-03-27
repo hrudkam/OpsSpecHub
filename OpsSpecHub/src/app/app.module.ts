@@ -21,7 +21,6 @@ import { EscalationreqComponent } from './components/escalationreq/escalationreq
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { FormsModule }   from '@angular/forms';
 import { AssignmentComponent } from './components/assignment/assignment.component';
-import { RFATemplatesComponent } from './components/rfatemplates/rfatemplates.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatSelectModule} from '@angular/material/select';
 import {MatButtonModule} from '@angular/material/button';
@@ -31,6 +30,10 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { TemplatebuilderComponent } from './components/templatebuilder/templatebuilder.component';
 import { QuestionComponent } from './components/question/question.component';
 import {MatIconModule} from '@angular/material/icon';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { OpsspecComponent } from './components/opsspec/opsspec.component';
+import { OpsspecDetailComponent } from './components/opsspec-detail/opsspec-detail.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 
 
@@ -45,10 +48,12 @@ import {MatIconModule} from '@angular/material/icon';
     DefectsComponent,
     EscalationreqComponent,
     AssignmentComponent,
-    RFATemplatesComponent,
     TemplatebuilderComponent,
     QuestionComponent,
-  ],
+    OpsspecComponent,
+    OpsspecDetailComponent,
+    
+    ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -69,7 +74,9 @@ import {MatIconModule} from '@angular/material/icon';
     MatButtonModule,
     MatCheckboxModule,
     MatAutocompleteModule,
-    MatIconModule
+    MatIconModule,
+    MatExpansionModule,
+    MatButtonToggleModule
 
   ],
   providers: [],

@@ -1,6 +1,8 @@
 export interface iModule {
        functionality?: string;
-       url?:string; 
+       systemtype?: string; 
+       resource?:string; 
+       
 }
 export interface iRFAClass {
     rfanum?: number; 
@@ -21,8 +23,26 @@ export interface iRFAClass {
     urgency?: number; 
     category?: string;
     maint?: number; 
+    invest?: number; 
 }
 export interface iEmployee{
     name?: string;
     title?: string; 
+}
+
+export interface iRFAAssignment{
+    rfanum?: number;
+    sinum?: number;
+    assignment?: string;
+    responsible?: string;
+    approved?: string; 
+    functionality?: string;
+    summary?: string;
+    type?: string; 
+    severity?: string; 
+}
+export interface iOpsSpec{
+    opsspecnum: number;
+    osfullname: string;
+    isavailable: number;
 }

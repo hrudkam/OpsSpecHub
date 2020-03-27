@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient,HttpHeaders } from '@angular/common/http'; 
-import { iRFAClass, iModule, iEmployee }  from '../models/rfaclass';
+import { iRFAClass, iModule, iEmployee, iRFAAssignment,iOpsSpec }  from '../models/rfaclass';
 import { map } from "rxjs/operators";
+
 
 
 
@@ -15,14 +16,28 @@ const httpOptions = {
 })
 export class RfaclassService {
 
-  url = 'http://10.34.9.14:3001/rfaclass';
-  // url = 'http://10.50.12.136/rfacass'; 
-  // url = 'http://localhost:3001/rfaclass';
-  escURL = 'http://10.34.9.14:3001/escalation/';
-  compEscURL = 'http://10.34.9.14:3001/completeescrfa/';
-  modulesURL = 'http://10.34.9.14:3001/modules';
-  modulesResourceURL = 'http://10.34.9.14:3001/modulesresources';
-  employeesURL = 'http://10.34.9.14:3001/employees';
+  // url = 'http://10.34.9.14:3001/rfaclass';
+  // escURL = 'http://10.34.9.14:3001/escalation/';
+  // compEscURL = 'http://10.34.9.14:3001/completeescrfa/';
+  // modulesURL = 'http://10.34.9.14:3001/modules';
+  // modulesResourceURL = 'http://10.34.9.14:3001/modulesresources';
+  // employeesURL = 'http://10.34.9.14:3001/employees';
+
+  ip = "10.10.27.253";
+  url = 'http://' + this.ip +':3001/rfaclass';
+  escURL = 'http://' + this.ip +':3001/escalation/';
+  compEscURL = 'http://' + this.ip +':3001/completeescrfa/';
+  modulesURL = 'http://' + this.ip +':3001/modules';
+  modulesResourceURL = 'http://' + this.ip +':3001/modulesresources';
+  employeesURL = 'http://' + this.ip +':3001/employees';
+  rfaAssignmentURL ='http://' + this.ip +':3001/rfaassign';
+  opsSpecURL = 'http://' + this.ip +':3001/opsspec';
+  isAvailURL = 'http://' + this.ip +':3001/isavail/';
+  notAvailURL = 'http://' + this.ip +':3001/notavail/';
+  
+
+  allModules: Observable<iModule[]>; 
+  allRFAAssignment: Observable<iRFAAssignment[]>
   
   constructor(private http: HttpClient) { 
   }
@@ -73,12 +88,45 @@ export class RfaclassService {
   //Get Modules for drop down
   public getModules(): Observable<iModule[]>{
     console.log('service run');
-    return this.http.get<iModule[]>(this.modulesURL, httpOptions);
+    this.allModules = this.http.get<iModule[]>(this.modulesURL, httpOptions);
+    console.log(this.allModules.forEach(element => {          
+    })
+    )
+    ; 
+    return this.allModules; 
   }
 
   //Get Employee List
   public getEmployees(): Observable<iEmployee[]>{
     console.log('service run');
     return this.http.get<iEmployee[]>(this.employeesURL, httpOptions);
+  }
+
+  //Get rfa assignments
+  public getRFAAssign(): Observable<iRFAAssignment[]>{
+    return this.http.get<iRFAAssignment[]>(this.rfaAssignmentURL, httpOptions)
+  }
+
+  //Get all OpsSpec
+  public getAllOpsSpec(): Observable<iOpsSpec[]>{
+    return this.http.get<iOpsSpec[]>(this.opsSpecURL, httpOptions)
+  }
+  //OpsSpec is Available
+  public isAvail(osnum: number){
+    console.log("Available OS : " + osnum);
+    var insertURL = this.isAvailURL + osnum; 
+    console.log(insertURL);
+   return this.http.put(insertURL,httpOptions).subscribe(data=> {
+     console
+   });
+  }
+  //OpsSpec is not available
+  public notAvail(osnum: number){
+    console.log("Unavailable OS : " + osnum);
+    var insertURL = this.notAvailURL + osnum; 
+    console.log(insertURL);
+   return this.http.put(insertURL,httpOptions).subscribe(data=> {
+     console
+   });
   }
 }

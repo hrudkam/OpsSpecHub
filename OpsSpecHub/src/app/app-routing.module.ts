@@ -8,8 +8,9 @@ import { EscalationsComponent } from './components/escalations/escalations.compo
 import { DefectsComponent } from './components/defects/defects.component';
 import { EscalationreqComponent } from './components/escalationreq/escalationreq.component';
 import { AssignmentComponent } from './components/assignment/assignment.component';
-import { RFATemplatesComponent } from './components/rfatemplates/rfatemplates.component';
 import { TemplatebuilderComponent } from './components/templatebuilder/templatebuilder.component';
+import { OpsspecComponent } from './components/opsspec/opsspec.component';
+import { OpsspecDetailComponent } from './components/opsspec-detail/opsspec-detail.component';
 
 
 const routes: Routes = [
@@ -20,8 +21,9 @@ const routes: Routes = [
   {path: 'defects', component: DefectsComponent},
   {path: 'assignment', component: AssignmentComponent},
   {path: 'escalationreq/:id', component: EscalationreqComponent},
-  {path: 'rfatemplates', component: RFATemplatesComponent},
-  {path: 'templates', component: TemplatebuilderComponent}
+  {path: 'templates', component: TemplatebuilderComponent},
+  {path: 'opsspec', component: OpsspecComponent},
+  {path: 'opsspec/:id', component: OpsspecDetailComponent}
   
 ];
 

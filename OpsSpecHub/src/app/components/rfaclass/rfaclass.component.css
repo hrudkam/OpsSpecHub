@@ -1,5 +1,5 @@
 .highlight{
-    background-color: rgb(255, 17, 0); /* green */
+    background-color: rgb(255, 17, 0); /* black */
   }
 .mat-cell {
     text-align: left;
@@ -13,4 +13,3 @@
     padding-left: 10px;
     padding-right: 10px;
 }
-
